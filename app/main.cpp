@@ -82,13 +82,22 @@ int main() {
             roster.back().print();
 
         } else if (choice == 3) {
-            // TODO (Checkpoint 1): call save_roster() with roster and roster_path.
-            // Print "Roster saved." on success, or a clear error message on failure.
+            if (save_roster(roster, roster_path)) {
+                std::cout << "Roster saved successfully.\n";
+            } else {
+                std::cout << "Failed to save roster.\n";
+            }
 
-        } else if (choice == 4) {
-            // TODO (Checkpoints 2 and 3): call load_roster() with roster_path.
-            // On success, print how many mechs are in the roster and how many
-            // lines were skipped. On failure, print a clear error message.
+        }else if (choice == 4) {
+            int skipped = 0;
+            if(load_roster(roster_path, roster, skipped)) {
+                std::cout << "Loaded  " << roster.size() 
+                << " mechs (" << skipped << "lines skipped).\n";
+
+            }else{
+               std::cout << "Failed to load roster file.\n";
+           }
+
 
         } else if (choice == 5) {
             if (roster.empty()) {
@@ -105,18 +114,29 @@ int main() {
             std::cout << "Challenger: ";
             challenger.print();
 
-            DuelResult result = simulate_duel(fighter, challenger);
-            std::cout << result.summary << '\n';
+           DuelResult result = simulate_duel(fighter, challenger);
+           std::cout << result.summary << '\n';
 
-            // TODO (Checkpoint 4a): append a line to battle_log_path made of
-            // timestamp(), a space, and result.summary.
+        //TODO (Checkpoint 4a)
+    std::string log_entry = timestamp() + " " + result.summary;
+    append_line(battle_log_path, log_entry);
+            
 
-            // TODO (Checkpoint 4b): if the fighter was destroyed, append a line to
-            // graveyard_path saying who was destroyed and by whom, then remove the
-            // fighter from the roster. (Do not use fighter after removing it.)
+
+
+            // TODO (Checkpoint 4b): 
+     
+                   if (fighter.hp() <= 0) {
+                std::string graveyard_entry = fighter.name() +
+                    " was destroyed by " + challenger.name() + ".";
+                append_line(graveyard_path, graveyard_entry);
+                roster.erase(roster.begin() +  (index - 1));
+            }
+
+           
 
         } else {
-            // TODO (Stretch): ask whether to save the roster before quitting.
+       
             break;
         }
     }
